@@ -1,29 +1,45 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-// Context lets us pass a value deep into the component tree
-// without explicitly threading it through every component.
-// Create a context for the current theme (with "light" as the default).
+//Creates a Context object.
+// The defaultValue argument is only used when a component does not have a matching Provider above it in the tree. 
+
+//One Provider can be connected to many consumers.
 const ThemeContext = React.createContext('#ffffff');
+
+//React DevTools uses this string to determine what to display for the context.
+ThemeContext.displayName = 'MyThemeContext';
 
 class App extends React.Component {
   render() {
-    // Use a Provider to pass the current theme to the tree below.
-    // Any component can read it, no matter how deep it is.
-    // In this example, we're passing "dark" as the current value.
     return (
       <div>
       <ThemeContext.Provider value="#000000">
+        <p>Here the current theme value is read from the closest Provider value, e.g. black</p>
         <Toolbar />
+
+        <p>The context consumer value is:</p>
+        <ThemeContext.Consumer>
+          {value => (
+            <h2>{value}</h2>
+          )}
+        </ThemeContext.Consumer>
       </ThemeContext.Provider>
+
+      <p>Here the current theme is the default created context value, e.g. white</p>
        <Toolbar />
+
+        <p>The context consumer value is:</p>
+       <ThemeContext.Consumer>
+        {value => (
+          <h2>{value}</h2>
+        )}
+      </ThemeContext.Consumer>
       </div>
     );
   }
 }
 
-// A component in the middle doesn't have to
-// pass the theme down explicitly anymore.
 function Toolbar(props) {
   return (
     <div>
@@ -33,24 +49,20 @@ function Toolbar(props) {
 }
 
 class ThemedButton extends React.Component {
-  // Assign a contextType to read the current theme context.
-  // React will find the closest theme Provider above and use its value.
-  // In this example, the current theme is "dark".
-  static contextType = ThemeContext;
   render() {
-    return <Button theme={this.context}/>;
+    //Another way to subscribe the ThemedButton to the ThemeContext object is with class field
+    //static contextType = ThemeContext;
+    let theme = this.context;
+    console.log(theme);
+
+    return (
+      <button style={{backgroundColor: theme}}>Button</button>
+    );
   }
 }
 
-class Button extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-  render() {
-    return (
-      <button style={{backgroundColor: this.props.theme}}>Button</button>
-    )
-  }
-}
+// Subscribe the ThemedButton to the ThemeContext object
+// The contextType property on a class can be assigned a Context object created by React.createContext(). This lets you consume the nearest current value of that Context type using this.context. You can reference this in any of the lifecycle methods including the render function.
+ThemedButton.contextType = ThemeContext;
 
 ReactDOM.render(<App />, document.getElementById("root"));
