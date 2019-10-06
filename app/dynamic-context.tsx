@@ -44,7 +44,8 @@ class App extends React.Component {
       changeTheme: this.changeTheme,
     };
   }
-
+  // If the value consists of the object for the themes itself, it will re-render all consumers every time the Provider re-renders because a new object is always created for value.
+  //SOLUTION: Lift the value into the parent’s state, e.g. App state.
   render() {
     return (
       <div>
