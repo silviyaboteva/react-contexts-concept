@@ -3,14 +3,20 @@ import * as ReactDOM from 'react-dom';
 
 const Hello = ({ name }) => <h1>Hello {name}!</h1>;
 
+function getDisplayName(WrappedComponent) {
+  return WrappedComponent.displayName || WrappedComponent.name || 'Component';
+}
+
 // Take in a component as argument WrappedComponent
 function simpleHOC(WrappedComponent) {
   // And return a new anonymous component
-  return class extends React.Component{
+  class HOC extends React.Component{
     render() {
       return <WrappedComponent {...this.props}/>;
     }
   }
+  HOC.displayName = `HOC(${getDisplayName(WrappedComponent)})`;
+  return HOC;
 }
 
 // Create a new component
@@ -21,18 +27,21 @@ const NewComponent = simpleHOC(Hello);
 // Take in a component as argument WrappedComponent
 function withNameReact(WrappedComponent) {
   // And return a new anonymous component
-  return class extends React.Component {
+  class HOC extends React.Component {
     render() {
       return <WrappedComponent name="React" {...this.props} />;
     }
-  };
+  }
+
+  HOC.displayName = `HOC(${getDisplayName(WrappedComponent)})`;
+  return HOC;
 }
 
 const HelloReact = withNameReact(Hello);
 
 
 
-const Button = ({ value, increaseButton }) => <input type={'button'} value={value} onClick={increaseButton}/>;
+const Button = ({ value, increaseButton }) => <input type={'button'} value={value ? value : 'Button'} onClick={increaseButton}/>;
 
 function clickableButton(WrappedComponent) {
   class ClickableButton extends React.Component {
@@ -56,7 +65,8 @@ function clickableButton(WrappedComponent) {
       );
     }
   }
-
+  
+  ClickableButton.displayName = `ClickableButtonHOC(${getDisplayName(WrappedComponent)})`;
   return ClickableButton;
 }
 
