@@ -1,95 +1,100 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-// import { DropDownList } from '@progress/kendo-react-dropdowns';
-// import { Button } from '@progress/kendo-react-buttons';
+import '../style.css';
 
-export const kendoThemes = {
-  light: {
-    color: '#656565',
-    background: '#f6f6f6',
+export const themes = {
+  primary: {
+    color: '#ffffff',
+    background: '#337ab7',
   },
-  dark: {
-    color: '#f6f6f6',
-    background: '#656565',
-  },
+  success: {
+    color: '#ffffff',
+    background: '#5cb85c'
+  }
 };
 
-export const ThemeContext = React.createContext(null);
+//Creates a Context object.
+// The defaultValue argument is only used when a component does not have a matching Provider above it in the tree. 
+//One Provider can be connected to many consumers.
+const ThemeContext = React.createContext({
+  theme: themes.primary, 
+  changeTheme: () => {}
+  });
 
+//React DevTools uses this string to determine what to display for the context.
+ThemeContext.displayName = 'MyThemeContext';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      themes: kendoThemes,
-      selected: kendoThemes.light,
-    };
 
-    this.toggleTheme = () => {
+    this.changeTheme = () => {
+      console.log("App state: ", this.state);
       this.setState(state => ({
-        selected:
-          state.selected === kendoThemes.dark
-            ? kendoThemes.light
-            : kendoThemes.dark,
-      }));
+              theme:
+                state.theme === themes.primary
+                  ? themes.success
+                  : themes.primary,
+            }));
+    }
+
+    this.state = {
+      theme: themes.success,
+      changeTheme: this.changeTheme,
     };
   }
 
   render() {
-    // The ThemedButton button inside the ThemeProvider
-    // uses the theme from state while the one outside uses
-    // the default dark theme
     return (
-      <div style={{display: "flex", flexDirection: "row"}}>
-        <ThemeContext.Provider value={this.state.selected}>
-          <Toolbar changeTheme={this.toggleTheme} />
-          <ThemedButton>Check how my value are changing</ThemedButton>
-        </ThemeContext.Provider>
+      <div>
+      <ThemeContext.Provider value={this.state}>
+        <p>The ThemeContext.Provider provides the whole App state object as value down to the ThemedButton. In the ThemedButton there is ThemeContext.Consumer implementation which consumes the value object and on click fires the changeTheme function to change the theme.</p>
+        <Content/>
+      </ThemeContext.Provider>
       </div>
     );
   }
 }
 
-// An intermediate component that uses the ThemedButton
-function Toolbar(props) {
+function Content(props) {
+  console.log("Toolbar props: ", props);
+
   return (
-    <MyDropDownList onClick={props.changeTheme}>
-      Change Theme
-    </MyDropDownList>
+    <div>
+      <ThemedButton/>
+    </div>
   );
 }
 
-class MyDropDownList extends React.Component {
-  render() {
-      let theme = this.context;
-      console.log(theme, "drop down context");
-    return (
-      <select>
-        <option value="volvo">Volvo</option>
-      </select>
-    )
-  }
-}
-
-
-export default MyDropDownList;
-
 class ThemedButton extends React.Component {
   render() {
-    let props = this.props;
+    //Another way to subscribe the ThemedButton to the ThemeContext object is with class field
+    //static contextType = ThemeContext;
     let theme = this.context;
+    let props = this.props;
+    console.log("Themed Button context: ", theme);
+    console.log("ThemedButton props: ", props);
+
     return (
-      <button
-        {...props}
-        style={{backgroundColor: theme.background, color: theme.color}}
-      />
+      <ThemeContext.Consumer>
+        {({theme, changeTheme}) => (
+          <button
+            className={'my-btn'}
+            onClick={changeTheme}
+            style={{
+              backgroundColor: theme.background,
+              color: theme.color}}>
+            Toggle Theme
+          </button>
+        )}
+      </ThemeContext.Consumer>
     );
   }
 }
 
+// Subscribe the ThemedButton to the ThemeContext object
+// The contextType property on a class can be assigned a Context object created by React.createContext(). This lets you consume the nearest current value of that Context type using this.context. You can reference this in any of the lifecycle methods including the render function.
 ThemedButton.contextType = ThemeContext;
-
-export default ThemedButton;
 
 ReactDOM.render(<App />, document.getElementById("root"));
