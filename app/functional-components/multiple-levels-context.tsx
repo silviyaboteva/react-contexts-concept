@@ -1,4 +1,4 @@
-import React, { Fragment, useState  } from 'react';
+import React, { Fragment, useState, useContext  } from 'react';
 import * as ReactDOM from 'react-dom';
 
 const PackageContext = React.createContext(undefined);
@@ -43,33 +43,31 @@ const Floor3 = () => {
 }
 
 const Floor7 = () => {
+  const packageContext = useContext(PackageContext);
+
   return (
-    <PackageContext.Consumer>
-      {context => (
         <Fragment>
           <h3>Welcome to Floor 7</h3>
           <p>
             <strong>Company Name: </strong>
-            {context.data.companyName}
+            {packageContext.data.companyName}
           </p>
           <p>
             <strong>Employee Name: </strong>
-            {context.data.employeeName}
+            {packageContext.data.employeeName}
           </p>
           <p>
             <strong>Hardware: </strong>
-            {context.data.hardware}
+            {packageContext.data.hardware}
           </p>
           <p>
             <strong>Delivery Status: </strong>
-            {context.data.deliveryStatus}
+            {packageContext.data.deliveryStatus}
           </p>
-          <button onClick={context.updateDeliveryStatus}>
+          <button onClick={packageContext.updateDeliveryStatus}>
             Update Delivery Status
           </button>
         </Fragment>
-      )}
-      </PackageContext.Consumer>
     );
 }
 
