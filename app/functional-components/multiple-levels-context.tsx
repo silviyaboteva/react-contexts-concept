@@ -74,7 +74,7 @@ const Floor7 = () => {
 const App = () => {
   return (
      <div className="App">
-      <h1>Simple Context API Tutorial using Hook(useState)</h1>
+      <h1>Simple Context API Tutorial using Hooks (useState and useContext)</h1>
       <Provider>
         <Building />
       </Provider>
