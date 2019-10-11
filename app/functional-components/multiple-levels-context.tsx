@@ -1,24 +1,28 @@
-import React, { Fragment, useState, useContext  } from 'react';
+import React, { Fragment, useState, useContext, useCallback  } from 'react';
 import * as ReactDOM from 'react-dom';
 
 const PackageContext = React.createContext(undefined);
 
 const Provider = props => {
-  const [state, setState] = useState({
-    companyName: "Progress",
-    employeeName: "Silviya",
-    hardware: "MacBook Pro retina Display",
-    deliveryStatus: "Delivery In Progress..."
+  const [companyName, setCompanyName] = useState("Progress");
+  const [employeeName, setEmployeeName] = useState("Silviya");
+  const [hardware, setHardware] = useState("MacBook Pro retina Display");
+  const [status, setStatus] = useState("Delivery In Progress...");
 
-  });
-  console.log(state);
+  const onUpdateStatus = React.useCallback(
+    () => {
+      setStatus("Delivered");
+      console.log("Status state", status);
+    }, []);
+    
   return (
    <PackageContext.Provider
       value={{
-        data: state,
-        updateDeliveryStatus: () => {
-          setState({ ...state, deliveryStatus: "Delivered" });
-        }
+        companyName, 
+        employeeName, 
+        hardware, 
+        status,
+        onUpdateStatus
       }}
     >
       {props.children}
@@ -44,27 +48,28 @@ const Floor3 = () => {
 
 const Floor7 = () => {
   const packageContext = useContext(PackageContext);
+  console.log(packageContext);
 
   return (
         <Fragment>
           <h3>Welcome to Floor 7</h3>
           <p>
             <strong>Company Name: </strong>
-            {packageContext.data.companyName}
+            {packageContext.companyName}
           </p>
           <p>
             <strong>Employee Name: </strong>
-            {packageContext.data.employeeName}
+            {packageContext.employeeName}
           </p>
           <p>
             <strong>Hardware: </strong>
-            {packageContext.data.hardware}
+            {packageContext.hardware}
           </p>
           <p>
             <strong>Delivery Status: </strong>
-            {packageContext.data.deliveryStatus}
+            {packageContext.status}
           </p>
-          <button onClick={packageContext.updateDeliveryStatus}>
+          <button onClick={packageContext.onUpdateStatus}>
             Update Delivery Status
           </button>
         </Fragment>
