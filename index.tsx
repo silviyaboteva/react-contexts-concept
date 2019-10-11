@@ -2,7 +2,6 @@
 // import "./class-components/app/dynamic-context"
 // import "./class-components/app/hoc-basic"
 // import "./class-components/app/render-props"
-
 // import "./app/functional-components/basic-context"
-
-import "./app/functional-components/multiple-levels-context"
+// import "multiple-levels-context"
+import "./app/functional-components/hooks-useCallback-and-useMemo.tsx"
